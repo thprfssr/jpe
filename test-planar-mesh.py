@@ -7,9 +7,9 @@ from vector import *
 from physics import *
 from constants import *
 
-dt = 0.01
-k = 300
-m = 1
+dt = 0.001
+k = 150
+m = 2
 
 particles = []
 M = 10
@@ -72,7 +72,7 @@ def update(frame):
     print(frame)
     return ln,
 
-ani = FuncAnimation(fig, update, frames = range(0, 1000),
+ani = FuncAnimation(fig, update, frames = range(0, 2000),
         init_func = init, blit = True)
-
+#ani.save("test.mp4", dpi = 300, fps = 60)
 plt.show()
