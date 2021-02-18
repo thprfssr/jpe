@@ -147,3 +147,22 @@ class PotentialWell(Force):
 
     def acts_on(self, particle):
         return True
+
+class InverseSquare(Force):
+    def __init__(self, affected_particles = set(), mu = 1):
+        self.mu = mu
+        self.affected_particles = affected_particles
+
+    def force_on(self, particle):
+        F = O
+        if particle in self.affected_particles:
+            for p in self.affected_particles:
+                u = particle.position - p.position
+                r = u.norm()
+                n = u.normalize()
+                if r != 0:
+                    F += - self.mu / r**2 * n
+        return F
+
+    def acts_on(self, particle):
+        return particle in self.affected_particles
