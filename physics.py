@@ -36,6 +36,7 @@ class Particle:
             if f.acts_on(self):
                 self.forces.add(f)
 
+    @property
     def net_force(self):
         F = O
         for force in self.forces:
@@ -52,9 +53,11 @@ class SphericalParticle(Particle):
         super().__init__(*args, **kwargs)
         self.radius = radius
 
+    @property
     def volume(self):
         return 4/3 * pi * self.radius**3
 
+    @property
     def density(self):
         return self.volume() / self.mass
 
@@ -66,6 +69,7 @@ class FixedParticle(Particle):
                 velocity = O,
                 )
 
+    @property
     def net_force(self):
         return O
 
