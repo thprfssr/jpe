@@ -1,26 +1,50 @@
+from copy import deepcopy
+
 from vector import *
 from constants import *
 
 class Universe:
-    def __init__(self, particles = set(), forces = set()):
+    def __init__(self, *particles):
         self.particles = particles
-        self.forces = forces
 
-    def add_particles(self, *particles):
+    def add_particle(self, *particles):
         for p in particles:
             self.particles.add(p)
+
+    def add_force(self, *forces):
+        for f in forces:
+            for p in self.particles:
+                p.add_force(f)
+
+    def update(self, dt):
+        for p in self.particles:
+            p.update(dt)
 
 class Particle:
     def __init__(self,
             position = O,
             velocity = O,
-            acceleration = O,
             mass = 1,
             ):
         self.position = position
         self.velocity = velocity
-        self.acceleration = acceleration
         self.mass = mass
+        self.forces = set()
+
+    def add_force(self, *forces):
+        for f in forces:
+            self.forces.add(f)
+
+    def net_force(self):
+        F = O
+        for force in self.forces:
+            F += force.force_on(self)
+        return F
+
+    def update(self, dt):
+        a = self.net_force() / self.mass
+        self.velocity += a * dt
+        self.position += self.velocity * dt
 
 class Force:
     def __init__(self):
@@ -28,3 +52,22 @@ class Force:
 
     def force_on(self, particle):
         pass # Defined in daughter classes
+
+class Spring(Force):
+    def __init__(self, particle_a, particle_b, k = 1, rest_length = 1):
+        self.particle_a = particle_a
+        self.particle_b = particle_b
+
+        self.k = k
+        self.rest_length = rest_length
+
+    def force_on(self, particle):
+        u = self.particle_b.position - self.particle_a.position
+        n = u.normalize()
+        compression = u.norm() - self.rest_length
+        if particle == self.particle_a:
+            return n * self.k * compression
+        elif particle == self.particle_b:
+            return -n * self.k * compression
+        else:
+            return O
