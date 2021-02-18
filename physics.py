@@ -47,6 +47,11 @@ class Particle:
         self.velocity += a * dt
         self.position += self.velocity * dt
 
+class SphericalParticle(Particle):
+    def __init__(self, radius = 1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.radius = radius
+
 class FixedParticle(Particle):
     def __init__(self, position = O):
         super().__init__(
