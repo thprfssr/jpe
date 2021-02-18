@@ -25,10 +25,12 @@ class Particle:
             position = O,
             velocity = O,
             mass = 1,
+            charge = 0,
             ):
         self.position = position
         self.velocity = velocity
         self.mass = mass
+        self.charge = charge
         self.forces = set()
 
     def add_force(self, *forces):
@@ -192,7 +194,7 @@ class Buoyancy(Force):
             return O
 
     def acts_on(self, particle):
-        return type(particle) == SphericalParticle
+        return issubclass(type(particle), SphericalParticle)
 
 class StokesDrag(Force):
     def __init__(self, viscosity = 1):
@@ -204,4 +206,20 @@ class StokesDrag(Force):
         return - 6 * pi * self.viscosity * r * v
 
     def acts_on(self, particle):
-        return type(particle) == SphericalParticle
+        return issubclass(type(particle), SphericalParticle)
+
+class UniformElectricField(Force):
+    def __init__(self, strength = 1, direction = Z):
+        self.strength = strength
+        self.direction = direction
+
+    def force_on(self, particle):
+        return self.strength * particle.charge * self.direction
+
+    def acts_on(self, particle):
+        return particle.charge != 0
+
+class Drop(SphericalParticle):
+    def __init__(self, density = 1e3, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mass = self.volume() * density
