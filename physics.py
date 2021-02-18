@@ -102,3 +102,17 @@ class UniformGravity(Force):
 
     def force_on(self, particle):
         return - particle.mass * self.g * Z
+
+class CentralForce(Force):
+    def __init__(self, center = O, mu = 1):
+        self.center = center
+        self.mu = mu
+
+    def force_on(self, particle):
+        u = particle.position - self.center
+        r = u.norm()
+        n = u.normalize()
+        if r != 0:
+            return - self.mu / r**2 * n
+        else:
+            return O
