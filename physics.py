@@ -78,3 +78,10 @@ class Drag(Force):
 
     def force_on(self, particle):
         return - self.beta * particle.velocity
+
+class UniformGravity(Force):
+    def __init__(self, g = 9.8):
+        self.g = g
+
+    def force_on(self, particle):
+        return - particle.mass * self.g * Z
