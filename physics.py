@@ -33,9 +33,8 @@ class Particle:
 
     def add_force(self, *forces):
         for f in forces:
-            if type(f) == Spring and not self in f.particles():
-                continue
-            self.forces.add(f)
+            if f.acts_on(self):
+                self.forces.add(f)
 
     def net_force(self):
         F = O
@@ -72,6 +71,9 @@ class Force:
     def force_on(self, particle):
         pass # Defined in daughter classes
 
+    def acts_on(self, particle):
+        pass # Defined in daughter classes
+
 class Spring(Force):
     def __init__(self, particle_a, particle_b, k = 1, rest_length = 1):
         self.particle_a = particle_a
@@ -94,12 +96,18 @@ class Spring(Force):
         else:
             return O
 
+    def acts_on(self, particle):
+        return particle in {self.particle_a, self.particle_b}
+
 class Drag(Force):
     def __init__(self, beta = 1):
         self.beta = beta
 
     def force_on(self, particle):
         return - self.beta * particle.velocity
+
+    def acts_on(self, particle):
+        return True
 
 class UniformGravity(Force):
     def __init__(self, g = 9.8, direction = -Z):
@@ -108,6 +116,9 @@ class UniformGravity(Force):
 
     def force_on(self, particle):
         return particle.mass * self.g * self.direction
+
+    def acts_on(self, particle):
+        return True
 
 class CentralForce(Force):
     def __init__(self, center = O, mu = 1):
@@ -122,3 +133,6 @@ class CentralForce(Force):
             return - self.mu / r**2 * n
         else:
             return O
+
+    def acts_on(self, particle):
+        return True
