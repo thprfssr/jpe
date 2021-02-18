@@ -193,3 +193,15 @@ class Buoyancy(Force):
 
     def acts_on(self, particle):
         return type(particle) == SphericalParticle
+
+class StokesDrag(Force):
+    def __init__(self, viscosity = 1):
+        self.viscosity = viscosity
+
+    def force_on(self, particle):
+        v = particle.velocity
+        r = particle.radius
+        return - 6 * pi * self.viscosity * r * v
+
+    def acts_on(self, particle):
+        return type(particle) == SphericalParticle
