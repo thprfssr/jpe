@@ -1,5 +1,5 @@
 from vector import *
-from numpy import inf
+from numpy import inf, pi
 
 dt = 0.0001
 

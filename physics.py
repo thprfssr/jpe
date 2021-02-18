@@ -52,6 +52,12 @@ class SphericalParticle(Particle):
         super().__init__(*args, **kwargs)
         self.radius = radius
 
+    def volume(self):
+        return 4/3 * pi * self.radius**3
+
+    def density(self):
+        return self.volume() / self.mass
+
 class FixedParticle(Particle):
     def __init__(self, position = O):
         super().__init__(
@@ -171,3 +177,19 @@ class InverseSquare(Force):
 
     def acts_on(self, particle):
         return particle in self.affected_particles
+
+class Buoyancy(Force):
+    def __init__(self, medium_density = 1, g = 9.8, direction = -Z):
+        self.medium_density = medium_density
+        self.g = g
+        self.direction = direction
+
+    def force_on(self, particle):
+        if self.acts_on(particle):
+            F = - self.medium_density * particle.volume() * self.g
+            return F * self.direction
+        else:
+            return O
+
+    def acts_on(self, particle):
+        return type(particle) == SphericalParticle
