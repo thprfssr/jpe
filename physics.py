@@ -71,3 +71,10 @@ class Spring(Force):
             return -n * self.k * compression
         else:
             return O
+
+class Drag(Force):
+    def __init__(self, beta = 1):
+        self.beta = beta
+
+    def force_on(self, particle):
+        return - self.beta * particle.velocity
