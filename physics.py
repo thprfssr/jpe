@@ -46,6 +46,23 @@ class Particle:
         self.velocity += a * dt
         self.position += self.velocity * dt
 
+class FixedParticle(Particle):
+    def __init__(self, position = O):
+        super().__init__(
+                mass = inf,
+                position = position,
+                velocity = O,
+                )
+
+    def net_force(self):
+        return O
+
+    def add_force(self, *forces):
+        pass
+
+    def update(self, dt):
+        pass
+
 class Force:
     def __init__(self):
         pass # Defined in daughter classes
