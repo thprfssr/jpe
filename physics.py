@@ -136,3 +136,14 @@ class CentralForce(Force):
 
     def acts_on(self, particle):
         return True
+
+class PotentialWell(Force):
+    def __init__(self, center = O, k = 1):
+        self.k = 1
+        self.center = center
+
+    def force_on(self, particle):
+        return - self.k * (particle.position - self.center)
+
+    def acts_on(self, particle):
+        return True
