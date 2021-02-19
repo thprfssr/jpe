@@ -20,6 +20,11 @@ class System:
         for p in self.particles:
             p.update(dt)
 
+    @property
+    def system_state(self):
+        return tuple([p.state for p in self.particles])
+
+
 class Particle:
     def __init__(self,
             position = O,
