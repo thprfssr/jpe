@@ -53,6 +53,14 @@ class System:
     def acceleration(self, particle):
         return particle.acceleration(self.state)
 
+    @property
+    def total_kinetic_energy(self):
+        K = 0
+        for p in self.particles:
+            v = p.velocity(self.state).norm()
+            K += 1/2 * p.mass * v**2
+        return K
+
     def __make_state_array(self, state = None):
         if state == None:
             state = self.state
