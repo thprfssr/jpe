@@ -9,7 +9,7 @@ class Universe:
 
     def add_particle(self, *particles):
         for p in particles:
-            self.particles.add(p)
+            self.particles = *self.particles, p
 
     def add_force(self, *forces):
         for f in forces:
