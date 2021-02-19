@@ -4,7 +4,7 @@ import numpy.random as npr
 from matplotlib.animation import FuncAnimation
 
 from vector import *
-from rewrite_physics import *
+from physics import *
 from constants import *
 
 dt = 0.01

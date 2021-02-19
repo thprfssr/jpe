@@ -1,6 +1,6 @@
 from vector import *
 from constants import *
-from rewrite_physics import *
+from physics import *
 
 dt = 0.01
 

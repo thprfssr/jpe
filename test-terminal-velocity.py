@@ -1,4 +1,4 @@
-from rewrite_physics import *
+from physics import *
 from vector import *
 from constants import *
 
