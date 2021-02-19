@@ -1,17 +1,18 @@
-from physics import *
+from rewrite_physics import *
 from vector import *
 from constants import *
 
-dt = 0.0001
+dt = 0.01
 
-p = Particle(position = Vector(1, 1, 1), velocity = 1000*X)
+S = System()
+p = S.create_particle(position = Vector(1, 1, 1), velocity = 1000*Z + 5000*X)
 c = FixedParticle()
-U = Universe(p, c)
-U.add_force(Spring(p, c))
-U.add_force(UniformGravity())
-U.add_force(Drag())
+S.place_particle(c)
+S.add_forces(Spring(p, c))
+S.add_forces(UniformGravity())
+S.add_forces(Drag())
 
 while True:
-    x, y, z = p.position
+    x, y, z = S.position(p)
     print('%f\t%f\t%f' % (x, y, z))
-    U.update(dt)
+    S.update(dt)

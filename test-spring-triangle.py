@@ -1,24 +1,24 @@
 from vector import *
 from constants import *
-from physics import *
+from rewrite_physics import *
 
-dt = 0.0001
+dt = 0.01
 
-pa = Particle(position = Vector(-1, 0, 1))
-pb = Particle(position = Vector(1, 0, -1))
-pc = Particle(position = Vector(0, 2, 0))
-U = Universe(pa, pb, pc)
-U.add_force(
+S = System()
+pa = S.create_particle(position = Vector(-1, 0, 1))
+pb = S.create_particle(position = Vector(1, 0, -1))
+pc = S.create_particle(position = Vector(0, 2, 0))
+S.add_forces(
         Spring(pa, pb),
         Spring(pb, pc),
         Spring(pc, pa),
         )
-U.add_force(Drag())
+S.add_forces(Drag())
 
 while True:
-    A = (pb.position - pc.position).norm()
-    B = (pc.position - pa.position).norm()
-    C = (pa.position - pb.position).norm()
+    A = (S.position(pb) - S.position(pc)).norm()
+    B = (S.position(pc) - S.position(pa)).norm()
+    C = (S.position(pa) - S.position(pb)).norm()
     print('%f\t%f\t%f' % (A, B, C))
 
-    U.update(dt)
+    S.update(dt)

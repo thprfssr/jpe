@@ -1,13 +1,13 @@
-from physics import *
+from rewrite_physics import *
 from vector import *
 from constants import *
 
-dt = 0.0001
+dt = 0.01
 
-p = Particle(position = X, velocity = 1.2*Y)
-U = Universe(p)
-U.add_force(CentralForce())
+S = System()
+p = S.create_particle(position = X, velocity = 1.2*Y)
+S.add_forces(CentralForce())
 
 while True:
-    print(p.position.norm())
-    U.update(dt)
+    print(S.position(p).norm())
+    S.update(dt)

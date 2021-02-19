@@ -1,14 +1,14 @@
-from physics import *
+from rewrite_physics import *
 from vector import *
 from constants import *
 
-dt = 0.0001
+dt = 0.01
 
-p = Particle()
-U = Universe(p)
-U.add_force(UniformGravity())
-U.add_force(Drag())
+S = System()
+p = S.create_particle()
+S.add_forces(UniformGravity())
+S.add_forces(Drag())
 
 while True:
-    print(p.velocity.z)
-    U.update(dt)
+    print(S.velocity(p).z)
+    S.update(dt)

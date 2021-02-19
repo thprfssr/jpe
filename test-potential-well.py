@@ -1,13 +1,13 @@
-from physics import *
+from rewrite_physics import *
 from vector import *
 from constants import *
 
-p = Particle(position = X, velocity = 1000*Y - 9*Z)
-U = Universe(p)
-U.add_force(PotentialWell())
-U.add_force(Drag())
+S = System()
+p = S.create_particle(position = X, velocity = 1000*Y - 9*Z)
+S.add_forces(RestoringForce())
+S.add_forces(Drag())
 
 while True:
-    U.update(0.0001)
-    x, y, z = p.position
+    S.update(0.01)
+    x, y, z = S.position(p)
     print('%f\t%f\t%f' % (x, y, z))

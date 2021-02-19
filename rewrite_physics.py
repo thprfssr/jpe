@@ -44,10 +44,13 @@ class System:
                     p.forces.add(f)
 
     def position(self, particle):
-        return self.state[particle][0]
+        return particle.position(self.state)
 
     def velocity(self, particle):
-        return self.state[particle][1]
+        return particle.velocity(self.state)
+
+    def acceleration(self, particle):
+        return particle.acceleration(self.state)
 
     def __make_state_array(self, state = None):
         if state == None:
@@ -131,6 +134,16 @@ class Particle:
             F += f.evaluate(self, state)
         return F / self.mass
 
+class FixedParticle(Particle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def velocity(self, state):
+        return O
+
+    def acceleration(self, state):
+        return O
+
 class Force:
     def __init__(self):
         pass # Defined in the child classes.
@@ -142,12 +155,88 @@ class Force:
         pass # Defined in the child classes.
 
 class UniformGravity(Force):
-    def __init__(self, g = 9.8, direction = -Z):
+    def __init__(self, g = 9.8, up = Z):
         self.g = g
-        self.direction = direction
+        self.up = up
 
     def evaluate(self, particle, state):
-        return particle.mass * self.g * self.direction
+        return - particle.mass * self.g * self.up
 
     def can_act_on(self, particle):
         return particle.mass != 0
+
+class Spring(Force):
+    def __init__(self, particle_a, particle_b, k = 1, rest_length = 1):
+        self.particle_a = particle_a
+        self.particle_b = particle_b
+        self.k = k
+        self.rest_length = rest_length
+
+    def evaluate(self, particle, state):
+        u = self.particle_b.position(state) - self.particle_a.position(state)
+        n = u.normalize()
+        compression = u.norm() - self.rest_length
+        if particle == self.particle_a:
+            return n * self.k * compression
+        elif particle == self.particle_b:
+            return -n * self.k * compression
+        else:
+            return O
+
+    def can_act_on(self, particle):
+        return particle in {self.particle_a, self.particle_b}
+
+class Drag(Force):
+    def __init__(self, beta = 1):
+        self.beta = beta
+
+    def evaluate(self, particle, state):
+        return - self.beta * particle.velocity(state)
+
+    def can_act_on(self, particle):
+        return True
+
+class CentralForce(Force):
+    def __init__(self, center = O, mu = 1, softening = 1e-9):
+        self.center = center
+        self.mu = mu
+        self.softening = softening
+
+    def evaluate(self, particle, state):
+        u = particle.position(state) - self.center
+        r = u.norm()
+        n = u.normalize()
+        strength = self.mu * r / (r**2 + self.softening**2)**(3/2)
+        return - n * strength 
+
+    def can_act_on(self, particle):
+        return True
+
+class RestoringForce(Force):
+    def __init__(self, center = O, k = 1):
+        self.k = 1
+        self.center = center
+
+    def evaluate(self, particle, state):
+        return - self.k * (particle.position(state) - self.center)
+
+    def can_act_on(self, particle):
+        return True
+
+class InverseSquare(Force):
+    def __init__(self, interacting_particles = set(), mu = 1, softening = 1e-9):
+        self.mu = mu
+        self.interacting_particles = interacting_particles
+        self.softening = softening
+
+    def evaluate(self, particle, state):
+        F = O
+        if particle in self.interacting_particles:
+            for p in self.interacting_particles:
+                center = p.position(state)
+                f = CentralForce(center, self.mu, self.softening)
+                F += f.evaluate(particle, state)
+        return F
+
+    def can_act_on(self, particle):
+        return particle in self.interacting_particles
