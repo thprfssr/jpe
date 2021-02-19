@@ -3,7 +3,7 @@ from copy import deepcopy
 from vector import *
 from constants import *
 
-class Universe:
+class System:
     def __init__(self, *particles):
         self.particles = particles
 
@@ -39,11 +39,19 @@ class Particle:
                 self.forces.add(f)
 
     @property
+    def state(self):
+        return self.position, self.velocity
+
+    @property
     def net_force(self):
         F = O
         for force in self.forces:
             F += force.force_on(self)
         return F
+
+    @property
+    def acceleration(self):
+        return self.net_force / self.mass
 
     def update(self, dt):
         a = self.net_force() / self.mass
