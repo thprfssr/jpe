@@ -4,10 +4,10 @@ import numpy.random as npr
 from matplotlib.animation import FuncAnimation
 
 from vector import *
-from physics import *
+from rewrite_physics import *
 from constants import *
 
-dt = 0.001
+dt = 0.01
 k = 150
 m = 2
 
@@ -15,47 +15,53 @@ particles = []
 M = 10
 N = 10
 r = 3
+S = System()
 for x in np.linspace(-r, r, M):
     for y in np.linspace(-r, r, N):
-        vx, vy, vz = npr.uniform(-0.4, 0.4, 3)
-        p = Particle(position = Vector(x, y),
-                velocity = Vector(vx, vy, vz),
+        p = S.create_particle(position = Vector(x, y),
                 mass = m)
         particles.append(p)
-U = Universe(*particles)
 
 for i in range(M*N):
     j = i + N
     if j in range(M*N):
         a = particles[i]
         b = particles[j]
-        U.add_force(Spring(a, b, k = k))
+        S.add_forces(Spring(a, b, k = k))
 
 for i in range(M*N):
     j = i + N + 1
     if j in range(M*N) and j % N != 0:
         a = particles[i]
         b = particles[j]
-        U.add_force(Spring(a, b, k = k))
+        S.add_forces(Spring(a, b, k = k))
 
 for i in range(M*N):
     j = i + 1
     if j in range(M*N) and j % N != 0:
         a = particles[i]
         b = particles[j]
-        U.add_force(Spring(a, b, k = k))
+        S.add_forces(Spring(a, b, k = k))
 
-U.add_force(Drag(beta = 6))
+S.add_forces(Drag(beta = 1))
 
-ca = FixedParticle(position = Vector(-9, 9))
-cb = FixedParticle(position = Vector(9, 9))
-U.add_force(Spring(ca, particles[9], k = 3*k))
-U.add_force(Spring(cb, particles[99], k = 3*k))
-U.add_force(UniformGravity(direction = -Y))
+ca = S.place_particle(FixedParticle(), position = Vector(-9, 9))
+cb = S.place_particle(FixedParticle(), position = Vector(9, 9))
+S.add_forces(Spring(ca, particles[9], k = 3*k))
+S.add_forces(Spring(cb, particles[99], k = 3*k))
+S.add_forces(UniformGravity(up = Y))
 
 fig, ax = plt.subplots()
 xdata, ydata = [], []
 ln, = plt.plot([], [], 'ro')
+
+
+evolution = [S.state] * 1000
+for i in range(1000):
+    evolution[i] = S.state
+    S.update(dt)
+    print(i)
+
 
 def init():
     a = 10
@@ -65,14 +71,14 @@ def init():
     return ln,
 
 def update(frame):
-    U.update(dt)
-    x = [p.position.x for p in particles]
-    y = [p.position.y for p in particles]
+    S.state = evolution[frame]
+    x = [S.position(p).x for p in particles]
+    y = [S.position(p).y for p in particles]
     ln.set_data(x, y)
     print(frame)
     return ln,
 
-ani = FuncAnimation(fig, update, frames = range(0, 2000),
+ani = FuncAnimation(fig, update, frames = range(0, 1000),
         init_func = init, blit = True)
-#ani.save("test.mp4", dpi = 300, fps = 60)
-plt.show()
+ani.save("test.mp4", dpi = 300, fps = 60)
+#plt.show()

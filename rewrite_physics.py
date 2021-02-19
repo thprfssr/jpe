@@ -36,6 +36,7 @@ class System:
 
     def place_particle(self, particle, position = O, velocity = O):
         self.state[particle] = (position, velocity)
+        return particle
 
     def add_forces(self, *forces):
         for f in forces:
