@@ -10,7 +10,6 @@ Physics Lab.
 
 
 # TODO
-Instead of jumping by discrete time steps, I should use a numerical
-integrator. However, I think that will require me to define a particle's
-position as a function of time. I will just use the time step method for now,
-and worry about integration in the future.
+* Use Geometric Algebra in order to easily deal with rotations
+* Implement rigid body dynamics
+* Use rigid rods to find the shape of the hanging gardens at FIU
