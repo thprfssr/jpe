@@ -129,6 +129,7 @@ class Particle:
             ):
         self.mass = mass
         self.charge = charge
+        self.radius = radius
         self.forces = set()
 
     def position(self, state):
@@ -249,3 +250,48 @@ class InverseSquare(Force):
 
     def can_act_on(self, particle):
         return particle in self.interacting_particles
+
+class StokesDrag(Force):
+    def __init__(self, viscosity = 1):
+        self.viscosity = viscosity
+
+    def evaluate(self, particle, state):
+        if particle.radius == None:
+            return O
+        else:
+            mu = self.viscosity
+            R = particle.radius
+            v = particle.velocity(state)
+            return - 6 * pi * mu * R * v
+
+    def can_act_on(self, particle):
+        return particle.radius != None
+
+class UniformElectricField(Force):
+    def __init__(self, E = 1, up = Z):
+        self.E = E
+        self.up = up
+
+    def evaluate(self, particle, state):
+        if not self.can_act_on(particle):
+            return O
+        else:
+            return self.up * self.E * particle.charge
+
+    def can_act_on(self, particle):
+        return particle.charge != 0
+
+class BuoyantForce(Force):
+    def __init__(self, rho = 1, up = Z):
+        self.rho = rho
+        self.up = up
+
+    def evaluate(self, particle, state):
+        if not self.can_act_on(particle):
+            return O
+        else:
+            V = 4/3 * pi * particle.radius**3
+            return V * self.rho * self.up
+
+    def can_act_on(self, particle):
+        return particle.radius != None
